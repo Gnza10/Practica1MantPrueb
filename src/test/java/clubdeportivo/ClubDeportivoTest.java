@@ -46,7 +46,7 @@ public class ClubDeportivoTest {
 
     @Test
     @DisplayName("Testing adding an activity")
-    void test_CreatingNewGroup_IncreasesGroupSize(){
+    void test_CreatingNewGroup_ReturnsCorrectToString(){
         String[] groupData = {"1", "ActividadTest", "10", "0", "10.0"};
 
         try {
@@ -60,7 +60,7 @@ public class ClubDeportivoTest {
     @Test
     @DisplayName("Testing adding a group with negative numbers")
     void test_CreatingNewGroup_IncorrectValues_ThowsClubException(){
-        String[] groupData = {"1", "ActividadTest", "10", "-1", "10.0"};
+        String[] groupData = {"1", "ActividadTest", "10", "hola", "10.0"};
 
         assertThrows(ClubException.class, () -> {
             club.anyadirActividad(groupData);
@@ -76,6 +76,8 @@ public class ClubDeportivoTest {
             club.anyadirActividad(grupo);
         });
     }
+
+
 
     @Test
     @DisplayName("Testing the income")

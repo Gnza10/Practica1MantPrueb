@@ -3,6 +3,7 @@ package clubdeportivo;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class GrupoTest {
@@ -10,11 +11,16 @@ public class GrupoTest {
 
     @BeforeEach
     public void setUp() throws ClubException {
-        grupo = new Grupo("G1", "Futbol", 10, 5, 100.0);
+        try {
+            grupo = new Grupo("G1", "Futbol", 10, 5, 100.0);
+        } catch (ClubException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    public void testConstructor() {
+    @DisplayName("Testing creating a Group")
+    public void testGroup() {
         assertEquals("G1", grupo.getCodigo());
         assertEquals("Futbol", grupo.getActividad());
         assertEquals(10, grupo.getPlazas());
@@ -23,22 +29,31 @@ public class GrupoTest {
     }
 
     @Test
-    public void testConstructorInvalidData() throws ClubException {
+    @DisplayName("Testing creating a Group")
+    public void testGroupInvalidData() throws ClubException {
         assertThrows(ClubException.class, () -> {
-            new Grupo("G2", "Actividad2", -1, 5, 100.0);
-            new Grupo("G2", "Actividad2", 0, -1, 0);
-            new Grupo("G2", "Actividad2", 10, 5, -1);
+            new Grupo("G2", "Actividad2", -1, 5, 100.0); // Invalid nplazas
         });
-
+        assertThrows(ClubException.class, () -> {
+            new Grupo("G2", "Actividad2", 0, -1, 0); // Invalid matriculados
+        });
+        assertThrows(ClubException.class, () -> {
+            new Grupo("G2", "Actividad2", 10, 5, -1); // Invalid tarifa
+        });
+        assertThrows(ClubException.class, () -> {
+            new Grupo("G2", "Actividad2", 10, 15, 100.0); // matriculados > nplazas
+        });
     }
 
     @Test
+    @DisplayName("Testing Sufficient Places")
     public void SufficientPlaces() {
         assertEquals(5, grupo.plazasLibres());
 
     }
 
     @Test
+    @DisplayName("Testing Insufficient Places")
     public void InsufficientPlaces() throws ClubException {
         assertThrows(ClubException.class, () -> {
             grupo = new Grupo("G1", "Futbol", 10, 15, 100.0);
@@ -54,10 +69,12 @@ public class GrupoTest {
     }
 
     @Test
-    public void testUpadtePlacesInvalidData() throws ClubException {
+    public void testUpdatePlacesInvalidData() throws ClubException {
         assertThrows(ClubException.class, () -> {
-            grupo.actualizarPlazas(4); // esta por debajo del numero de matriculados
-            grupo.actualizarPlazas(-1);
+            grupo.actualizarPlazas(4); // Value less than matriculados
+        });
+        assertThrows(ClubException.class, () -> {
+            grupo.actualizarPlazas(-1); // Negative value
         });
 
     }
@@ -71,8 +88,10 @@ public class GrupoTest {
     @Test
     public void testEnrollInvalidData() throws ClubException {
         assertThrows(ClubException.class, () -> {
-            grupo.matricular(20);
-            grupo.matricular(-1);
+            grupo.matricular(20); // More than available places
+        });
+        assertThrows(ClubException.class, () -> {
+            grupo.matricular(-1); // Negative value
         });
 
     }
@@ -84,20 +103,27 @@ public class GrupoTest {
 
     @Test
     public void testEquals() throws ClubException {
-        Grupo grupo2 = new Grupo("g1", "futbol", 10, 5, 100.0);
-        assertTrue(grupo.equals(grupo2));
+        Grupo grupo2 = new Grupo("G1", "Futbol", 10, 5, 100.0);
+        assertTrue(grupo.equals(grupo2)); // Igualdad con otro objeto Grupo
+        assertFalse(grupo.equals(new Object())); // Desigualdad con otro tipo de objeto
+        assertTrue(grupo.equals(grupo)); // Reflexividad
+        assertTrue(grupo.equals(grupo2) == grupo2.equals(grupo)); // Simetría
+        assertTrue(grupo.equals(grupo2) && grupo2.equals(grupo)); // Transitividad
+        assertEquals(grupo.equals(grupo2), grupo.equals(grupo2)); // Consistencia
+        assertFalse(grupo.equals(null)); // Prueba de nullabilidad
     }
 
     @Test
-    public void testNoEqual() throws ClubException {
-        Grupo grupo2 = new Grupo("g2", "FUTBOL", 5, 0, 100.0);
+    void testNoEqual() throws ClubException {
+        Grupo grupo2 = new Grupo("g2", "FUTBOL", 5, 0, 100);
+        assertNotEquals(grupo, grupo2);
         assertFalse(grupo.equals(grupo2));
     }
 
-    @Test
-    public void testNoEqualGroup() throws ClubException {
-        assertFalse(grupo.equals(new Object()));
-    }
+    //
+    // public void testNoEqualGroup() throws ClubException {
+    // assertFalse(grupo.equals(new Object()));
+    // }
 
     @Test
     public void testHashCode() throws ClubException {

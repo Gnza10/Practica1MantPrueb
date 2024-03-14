@@ -77,6 +77,22 @@ public class ClubDeportivoTest {
         });
     }
 
+    @Test
+    @DisplayName("Testing free spots")
+    void test_FreeSpots_Returns10(){
+        try{
+            Grupo test = new Grupo("123A","Kizomba",10,10,25.0);
+            club.anyadirActividad(test);
+            Grupo pilates = new Grupo("456B","Pilates",15,5,50.0);
+            club.anyadirActividad(pilates);
+        } catch (ClubException e) {
+            e.printStackTrace();
+        }
+        
+        int n = club.plazasLibres("Pilates");
+
+        assertEquals(n, 10);
+    }
 
 
     @Test

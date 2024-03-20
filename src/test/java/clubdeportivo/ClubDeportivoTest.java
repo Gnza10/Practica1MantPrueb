@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+
 public class ClubDeportivoTest {
     ClubDeportivo club;
 
@@ -68,6 +69,22 @@ public class ClubDeportivoTest {
     }
 
     @Test
+    @DisplayName("Testing adding an already existing group but with more spots")
+    void test_AddingExistingGroupWithMoreSpots_ReturnsCorrectToString(){
+        String[] groupData = {"1", "ActividadTest", "10", "0", "10.0"};
+        String[] groupData2 = {"1", "ActividadTest", "15", "0", "10.0"};
+
+        try {
+            club.anyadirActividad(groupData);
+            club.anyadirActividad(groupData2);
+        } catch (ClubException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals("TestClub --> [ (1 - ActividadTest - 10.0 euros - P:15 - M:0) ]", club.toString());
+    }
+
+    @Test
     @DisplayName("Testing adding a null group")
     void test_NullGroup_ThrowsClubException(){
         Grupo grupo = null;
@@ -92,6 +109,58 @@ public class ClubDeportivoTest {
         int n = club.plazasLibres("Pilates");
 
         assertEquals(n, 10);
+    }
+
+    @Test
+    @DisplayName("Testing enroll to an activity with enough spots in only one group")
+    void test_EnrollToActivityWithEnoughSpots_ReturnsTrue(){
+        try {
+            Grupo test = new Grupo("123A","Kizomba",10,0,10);
+            club.anyadirActividad(test);
+            
+            club.matricular("Kizomba", 5);
+        } catch (ClubException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals("TestClub --> [ (123A - Kizomba - 10.0 euros - P:10 - M:5) ]", club.toString());
+    }
+
+    @Test
+    @DisplayName("Testing enroll to an activity with not enough spots ")
+    void test_EnrollToActivityWithNotEnoughSpots_ThrowsClubException(){
+        try {
+             Grupo test = new Grupo("123A","Kizomba",10,10,25.0);
+            club.anyadirActividad(test);
+                
+        } catch (ClubException e) {
+            assertEquals("ERROR: no hay suficientes plazas libres para esa actividad en el club.", e.getMessage());
+        }
+
+        assertThrows(ClubException.class, () -> {
+                club.matricular("Kizomba", 15);
+        });
+    }
+
+    @Test
+    @DisplayName("Testing enroll to an activity with enough spots in multiple groups")
+    void test_EnrollToActivityWithEnoughSpotsInMultipleGroups_ReturnsTrue(){
+        try{
+            Grupo test1 = new Grupo("1234", "Kizomba", 5, 0, 10);
+            Grupo noActividad = new Grupo("1289", "Pilates", 10, 0, 10);
+            Grupo test2 = new Grupo("4321", "Kizomba", 5, 0, 10);
+            club.anyadirActividad(test1);
+            club.anyadirActividad(noActividad);
+            club.anyadirActividad(test2);
+
+            club.matricular("Kizomba", 10);
+
+        }catch (ClubException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals("TestClub --> [ (1234 - Kizomba - 10.0 euros - P:5 - M:5), (1289 - Pilates - 10.0 euros - P:10 - M:0), (4321 - Kizomba - 10.0 euros - P:5 - M:5) ]"
+        , club.toString());
     }
 
 

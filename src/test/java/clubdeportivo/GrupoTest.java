@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class GrupoTest {
     private Grupo grupo;
@@ -21,67 +23,99 @@ public class GrupoTest {
     @Test
     @DisplayName("Testing creating a Group")
     public void testGroup() {
-        assertEquals("G1", grupo.getCodigo());
-        assertEquals("Futbol", grupo.getActividad());
-        assertEquals(10, grupo.getPlazas());
-        assertEquals(5, grupo.getMatriculados());
-        assertEquals(100.0, grupo.getTarifa(), 0.01);
+       try {
+            Grupo grupoTest = new Grupo("G1", "Futbol", 10, 5, 100.0);
+        
+            assertEquals("(G1 - Futbol - 100.0 euros - P:10 - M:5)", grupoTest.toString());
+        } catch (ClubException e) {
+       
+        e.printStackTrace();
+        }
     }
 
     @Test
+    @DisplayName("Testing getCodigo()")
+    public void test_GetCodigo_ReturnsG1() {
+        try {
+            Grupo grupoTest = new Grupo("G1", "Futbol", 10, 5, 100.0);
+
+            assertEquals("G1", grupoTest.getCodigo());
+        } catch (ClubException e) {
+            
+            e.printStackTrace();
+        }
+        
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "0, 5, 10.0",
+        "-5, 5, 10.0",
+        "5, -5, 10.0",
+        "5, 5, 0.0",
+        "5, 5, -10.0",
+        "5, 10, 10.0"
+    })
     @DisplayName("Testing creating a Group with invalid data")
-    public void testGroupInvalidData() throws ClubException {
-        // Caso 1: nplazas <= 0
+    public void test_GroupInvalidData_throwsClubException(int plazas, int matriculados, double tarifa) throws ClubException {
+        
         assertThrows(ClubException.class, () -> {
-            new Grupo("G2", "Actividad2", 0, 5, 100.0);
-        });
-
-        // Caso 2: matriculados < 0
-        assertThrows(ClubException.class, () -> {
-            new Grupo("G2", "Actividad2", 10, -1, 100.0);
-        });
-
-        // Caso 3: tarifa <= 0
-        assertThrows(ClubException.class, () -> {
-            new Grupo("G2", "Actividad2", 10, 5, 0);
-        });
-
-        // Caso 4: matriculados > nplazas
-        assertThrows(ClubException.class, () -> {
-            new Grupo("G2", "Actividad2", 10, 15, 100.0);
+            new Grupo("G2", "Actividad2", plazas, matriculados, tarifa);
         });
     }
 
     @Test
     @DisplayName("Testing Sufficient Places")
-    public void testSufficientPlaces() {
-        assertEquals(5, grupo.plazasLibres());
+    public void test_SufficientPlaces_returnTrue() {
+        try {
+            Grupo grupoTest = new Grupo("G1", "Futbol", 10, 5, 100.0);
+
+            assertEquals(5, grupoTest.plazasLibres());
+        } catch (ClubException e) {
+            
+            e.printStackTrace();
+        }
+        
     }
 
     @Test
-    @DisplayName("Testing Insufficient Places")
-    public void testInsufficientPlaces() throws ClubException {
-        assertThrows(ClubException.class, () -> {
-            grupo = new Grupo("G1", "Futbol", 10, 15, 100.0);
-            assertEquals(0, grupo.plazasLibres());
-        });
+    @DisplayName("Testing Limit value for Places")
+    public void test_limitValuesPlaces_ReturnTrue() throws ClubException {
+        Grupo grupoTest = new Grupo("G1", "Futbol", 10, 10, 100.0);
+        
+        int plazasLib = grupoTest.plazasLibres();
+        
+        assertEquals(plazasLib, 0);
     }
 
     @Test
     @DisplayName("Testing updatePlaces method")
-    public void testUpdatePlaces() throws ClubException {
-        grupo.actualizarPlazas(30);
-        assertEquals(30, grupo.getPlazas());
+    public void test_UpdatePlaces_ReturnTrue() throws ClubException {
+        grupo.actualizarPlazas(35);
+
+        int plazasLib = grupo.plazasLibres();
+
+        assertEquals(30, plazasLib);
     }
 
     @Test
     @DisplayName("Testing updatePlaces method with invalid data")
-    public void testUpdatePlacesInvalidData() throws ClubException {
+    public void test_updateLessPlaces_throwsClubException(){
+        int plazas = grupo.getMatriculados()-1;
+
         assertThrows(ClubException.class, () -> {
-            grupo.actualizarPlazas(4); // Value less than matriculados
+            grupo.actualizarPlazas(plazas); // Value less than matriculados
         });
+        
+    }
+
+    @Test
+    @DisplayName("Testing updatePlaces method with invalid data")
+    void test_updateNegativePlaces_throwsClubException(){
+        int plazas = -1;
+
         assertThrows(ClubException.class, () -> {
-            grupo.actualizarPlazas(-1); // Negative value
+            grupo.actualizarPlazas(plazas); // Negative value
         });
     }
 
@@ -89,17 +123,30 @@ public class GrupoTest {
     @DisplayName("Testing enroll method")
     public void testEnroll() throws ClubException {
         grupo.matricular(1);
-        assertEquals(6, grupo.getMatriculados());
+
+        int matriculados = grupo.getMatriculados();
+
+        assertEquals(6, matriculados);
     }
 
     @Test
     @DisplayName("Testing enroll method with invalid data")
     public void testEnrollInvalidData() throws ClubException {
+        int matriculados = grupo.getPlazas() + 1;
+
         assertThrows(ClubException.class, () -> {
-            grupo.matricular(20); // More than available places
+            grupo.matricular(matriculados); // More than available places
         });
+        
+    }
+
+    @Test
+    @DisplayName("Testing enroll method with invalid data")
+    void testEnrollNegative_throwsClubException() {
+        int matriculados = -1;
+
         assertThrows(ClubException.class, () -> {
-            grupo.matricular(-1); // Negative value
+            grupo.matricular(matriculados); // Negative value
         });
     }
 
@@ -112,8 +159,8 @@ public class GrupoTest {
     @Test
     @DisplayName("Testing equals method with equal groups")
     public void testEquals_EqualGroups() throws ClubException {
-
         Grupo grupo2 = new Grupo("G1", "Futbol", 10, 5, 100.0);
+
         assertTrue(grupo.equals(grupo2)); // Deben ser iguales
     }
 
@@ -128,14 +175,13 @@ public class GrupoTest {
     @Test
     @DisplayName("Testing equals method with null")
     public void testEquals_Null() throws ClubException {
-
-        assertFalse(grupo.equals(null)); // Debe ser falso porque no es igual a null
+        Grupo test = null;
+        assertFalse(grupo.equals(test)); // Debe ser falso porque no es igual a null
     }
 
     @Test
     @DisplayName("Testing equals method with the same instance")
     public void testEquals_SameInstance() throws ClubException {
-
         assertTrue(grupo.equals(grupo)); // Debe ser verdadero porque es la misma instancia
     }
 

@@ -23,13 +23,13 @@ public class GrupoTest {
     @Test
     @DisplayName("Testing creating a Group")
     public void testGroup() {
-       try {
+        try {
             Grupo grupoTest = new Grupo("G1", "Futbol", 10, 5, 100.0);
-        
+
             assertEquals("(G1 - Futbol - 100.0 euros - P:10 - M:5)", grupoTest.toString());
         } catch (ClubException e) {
-       
-        e.printStackTrace();
+
+            e.printStackTrace();
         }
     }
 
@@ -41,24 +41,25 @@ public class GrupoTest {
 
             assertEquals("G1", grupoTest.getCodigo());
         } catch (ClubException e) {
-            
+
             e.printStackTrace();
         }
-        
+
     }
 
     @ParameterizedTest
     @CsvSource({
-        "0, 5, 10.0",
-        "-5, 5, 10.0",
-        "5, -5, 10.0",
-        "5, 5, 0.0",
-        "5, 5, -10.0",
-        "5, 10, 10.0"
+            "0, 5, 10.0",
+            "-5, 5, 10.0",
+            "5, -5, 10.0",
+            "5, 5, 0.0",
+            "5, 5, -10.0",
+            "5, 10, 10.0"
     })
     @DisplayName("Testing creating a Group with invalid data")
-    public void test_GroupInvalidData_throwsClubException(int plazas, int matriculados, double tarifa) throws ClubException {
-        
+    public void test_GroupInvalidData_throwsClubException(int plazas, int matriculados, double tarifa)
+            throws ClubException {
+
         assertThrows(ClubException.class, () -> {
             new Grupo("G2", "Actividad2", plazas, matriculados, tarifa);
         });
@@ -72,19 +73,19 @@ public class GrupoTest {
 
             assertEquals(5, grupoTest.plazasLibres());
         } catch (ClubException e) {
-            
+
             e.printStackTrace();
         }
-        
+
     }
 
     @Test
     @DisplayName("Testing Limit value for Places")
     public void test_limitValuesPlaces_ReturnTrue() throws ClubException {
         Grupo grupoTest = new Grupo("G1", "Futbol", 10, 10, 100.0);
-        
+
         int plazasLib = grupoTest.plazasLibres();
-        
+
         assertEquals(plazasLib, 0);
     }
 
@@ -100,22 +101,22 @@ public class GrupoTest {
 
     @Test
     @DisplayName("Testing updatePlaces method with invalid data")
-    public void test_updateLessPlaces_throwsClubException(){
-        int plazas = grupo.getMatriculados()-1;
+    public void test_updateLessPlaces_throwsClubException() {
+        int plazas = grupo.getMatriculados() - 1;
 
         assertThrows(ClubException.class, () -> {
-            grupo.actualizarPlazas(plazas); // Value less than matriculados
+            grupo.actualizarPlazas(plazas); // Valor menos que matriculados
         });
-        
+
     }
 
     @Test
     @DisplayName("Testing updatePlaces method with invalid data")
-    void test_updateNegativePlaces_throwsClubException(){
+    void test_updateNegativePlaces_throwsClubException() {
         int plazas = -1;
 
         assertThrows(ClubException.class, () -> {
-            grupo.actualizarPlazas(plazas); // Negative value
+            grupo.actualizarPlazas(plazas); // Valor negativo
         });
     }
 
@@ -135,9 +136,9 @@ public class GrupoTest {
         int matriculados = grupo.getPlazas() + 1;
 
         assertThrows(ClubException.class, () -> {
-            grupo.matricular(matriculados); // More than available places
+            grupo.matricular(matriculados); // Mas que plazas disponibles
         });
-        
+
     }
 
     @Test
@@ -146,7 +147,7 @@ public class GrupoTest {
         int matriculados = -1;
 
         assertThrows(ClubException.class, () -> {
-            grupo.matricular(matriculados); // Negative value
+            grupo.matricular(matriculados); // Valor negativo
         });
     }
 
@@ -214,7 +215,7 @@ public class GrupoTest {
     public void testEquals_DifferentNumberOfSeats() throws ClubException {
 
         Grupo grupo2 = new Grupo("G1", "Futbol", 15, 5, 100.0);
-        assertTrue(grupo.equals(grupo2)); // Deben ser diferentes debido a diferentes números de plazas
+        assertTrue(grupo.equals(grupo2)); // Deben ser iguales debido a mismo codigo y nombre
     }
 
     @Test
@@ -222,7 +223,7 @@ public class GrupoTest {
     public void testEquals_DifferentNumberOfEnrolled() throws ClubException {
 
         Grupo grupo2 = new Grupo("G1", "Futbol", 10, 10, 100.0);
-        assertTrue(grupo.equals(grupo2)); // Deben ser diferentes debido a diferentes números de inscritos
+        assertTrue(grupo.equals(grupo2)); // Deben ser iguales debido a mismo codigo y nombre
     }
 
     @Test

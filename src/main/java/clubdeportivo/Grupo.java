@@ -1,3 +1,7 @@
+/*Realizado por:
+ * David Zarzavilla Borrego
+ * Gonzalo Muñoz Rubio
+ */
 package clubdeportivo;
 
 public class Grupo {

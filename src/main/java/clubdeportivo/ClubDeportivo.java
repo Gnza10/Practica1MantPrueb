@@ -1,3 +1,7 @@
+/*Realizado por:
+ * David Zarzavilla Borrego
+ * Gonzalo Muñoz Rubio
+ */
 package clubdeportivo;
 
 import java.util.StringJoiner;
@@ -44,7 +48,7 @@ public class ClubDeportivo {
 	}
 
 	public void anyadirActividad(Grupo g) throws ClubException {
-		if (g==null){ // ADDME: anaydido para comprobar los grupos nulos
+		if (g == null) { // ADDME: anaydido para comprobar los grupos nulos
 			throw new ClubException("ERROR: el grupo es nulo");
 		}
 		int pos = buscar(g);
@@ -74,10 +78,12 @@ public class ClubDeportivo {
 			throw new ClubException("ERROR: no hay suficientes plazas libres para esa actividad en el club.");
 		}
 		int i = 0;
-		while (/*i < ngrupos*/npersonas > 0) {
-			//Esa condición no es necesaria, ya que si nos quedamos sin grupos pero sigue habiendo personas
-			//que matricular quiere decir que había mas personas que plazas libres, en cuyo caso
-			//se lanzariá una excepción por la comprovación previa de la linea 73.
+		while (/* i < ngrupos */npersonas > 0) {
+			// Esa condición no es necesaria, ya que si nos quedamos sin grupos pero sigue
+			// habiendo personas
+			// que matricular quiere decir que había mas personas que plazas libres, en cuyo
+			// caso
+			// se lanzariá una excepción por la comprovación previa de la linea 73.
 			if (actividad.equals(grupos[i].getActividad())) {
 				int plazasGrupo = grupos[i].plazasLibres();
 				if (npersonas >= plazasGrupo) {
@@ -85,8 +91,9 @@ public class ClubDeportivo {
 					npersonas -= plazasGrupo;
 				} else {
 					grupos[i].matricular(npersonas);
-					//Añadimos npersonas = 0, ya que si no seguiría el bucle aunque no hubiera personas
-					//haciendolo tremendamente ineficiente
+					// Añadimos npersonas = 0, ya que si no seguiría el bucle aunque no hubiera
+					// personas
+					// haciendolo tremendamente ineficiente
 					npersonas = 0;
 				}
 			}

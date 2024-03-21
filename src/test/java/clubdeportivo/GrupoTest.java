@@ -1,3 +1,7 @@
+/*Realizado por:
+ * David Zarzavilla Borrego
+ * Gonzalo Muñoz Rubio
+ */
 package clubdeportivo;
 
 import static org.junit.jupiter.api.Assertions.*;
